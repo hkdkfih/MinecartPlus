@@ -1,5 +1,6 @@
 # MinecartPlus
-
+> [!WARNING]
+> If you stumbled upon this repo: This is a plugin for my private minecraf server. It's fully vibe coded so dont expect any code quality! I don't recommand you to use this but if you want, below is a pretty comprehensive README from codex.
 MinecartPlus is a Paper 26.2 plugin that adds faster, vanilla-style minecart rail tiers without registering modded blocks.
 
 | Rail | Logical ID | Actual target speed |
