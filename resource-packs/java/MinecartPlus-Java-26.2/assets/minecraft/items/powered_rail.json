@@ -1,0 +1,41 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 2602001,
+        "model": {
+          "type": "minecraft:model",
+          "model": "ironcraft:item/copper_powered_rail"
+        }
+      },
+      {
+        "threshold": 2602002,
+        "model": {
+          "type": "minecraft:model",
+          "model": "ironcraft:item/iron_powered_rail"
+        }
+      },
+      {
+        "threshold": 2602003,
+        "model": {
+          "type": "minecraft:model",
+          "model": "ironcraft:item/diamond_powered_rail"
+        }
+      },
+      {
+        "threshold": 2602004,
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/powered_rail"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/powered_rail"
+    }
+  }
+}

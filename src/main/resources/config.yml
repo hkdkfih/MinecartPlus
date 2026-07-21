@@ -1,0 +1,37 @@
+config-version: 2
+
+# Targets are actual traveled speeds, measured in blocks per tick. Multiply by 20
+# for blocks per second. The plugin compensates for vanilla's occupied-cart
+# movement multiplier so riders see these speeds too.
+speeds:
+  # Twice the vanilla powered-rail target.
+  powered-rail: 0.8
+  # The vanilla powered-rail target.
+  copper-powered-rail: 0.4
+  iron-powered-rail: 1.0
+  diamond-powered-rail: 1.6
+
+physics:
+  # Vanilla 26.2 adds 0.06 blocks/tick while a powered rail is active.
+  vanilla-boost-per-tick: 0.06
+  # Speed removed per tick when the cart is above the rail's target.
+  deceleration-per-tick: 0.06
+  # Classic minecart movement can skip a curve at one or more blocks per tick.
+  # MinecartPlus looks ahead and smoothly brakes to 16 blocks/second before a
+  # bend. If a cart is injected immediately beside a curve, safety takes
+  # priority and it brakes immediately rather than leaving the track.
+  curve-speed: 0.8
+  curve-look-ahead: 32
+  # Paper needs a high internal maximum so it does not hard-cap fast carts.
+  # This is only a numerical safety guard, not a rail target speed.
+  safety-max-speed: 64.0
+
+crafting:
+  result-amount: 6
+
+item:
+  # Float index 0 in the modern custom_model_data component. These are also
+  # usable by Geyser v2 "legacy" mappings for optional Bedrock textures.
+  copper-custom-model-data: 2602001.0
+  iron-custom-model-data: 2602002.0
+  diamond-custom-model-data: 2602003.0

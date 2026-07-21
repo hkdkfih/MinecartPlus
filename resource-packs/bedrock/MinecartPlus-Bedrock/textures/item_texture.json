@@ -1,0 +1,24 @@
+{
+  "resource_pack_name": "minecartplus_rails",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "ironcraft:copper_powered_rail": {
+      "textures": ["textures/items/copper_powered_rail"]
+    },
+    "ironcraft:copper_powered_rail_on": {
+      "textures": ["textures/items/copper_powered_rail_on"]
+    },
+    "ironcraft:iron_powered_rail": {
+      "textures": ["textures/items/iron_powered_rail"]
+    },
+    "ironcraft:iron_powered_rail_on": {
+      "textures": ["textures/items/iron_powered_rail_on"]
+    },
+    "ironcraft:diamond_powered_rail": {
+      "textures": ["textures/items/diamond_powered_rail"]
+    },
+    "ironcraft:diamond_powered_rail_on": {
+      "textures": ["textures/items/diamond_powered_rail_on"]
+    }
+  }
+}

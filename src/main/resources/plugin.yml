@@ -1,0 +1,20 @@
+name: MinecartPlus
+version: '${version}'
+main: dev.ironcraft.minecart.MinecartPlus
+description: Faster powered rails and craftable copper, iron, and diamond rail tiers with vanilla-style physics.
+author: IronCraft
+api-version: '26.2'
+
+commands:
+  ironcraft:
+    description: Shows information or manages IronCraft rail tiers.
+    usage: /ironcraft [give <target> <rail-id> [amount]|reload]
+    aliases: [icrail, copperrail]
+
+permissions:
+  ironcraft.command:
+    description: Allows /ironcraft information.
+    default: true
+  ironcraft.admin:
+    description: Allows giving custom rails and reloading the plugin.
+    default: op

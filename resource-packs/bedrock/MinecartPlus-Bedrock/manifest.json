@@ -1,0 +1,17 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "MinecartPlus Rail Visuals",
+    "description": "Bedrock item visuals for MinecartPlus through Geyser",
+    "uuid": "8f872df4-8e69-4ba2-8f9a-92900769fd70",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 0]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "174c625b-bf6d-4a08-b713-7cc470f24db0",
+      "version": [1, 0, 0]
+    }
+  ]
+}

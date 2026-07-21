@@ -1,0 +1,37 @@
+{
+  "format_version": 2,
+  "items": {
+    "minecraft:powered_rail": [
+      {
+        "type": "legacy",
+        "custom_model_data": 2602001,
+        "bedrock_identifier": "ironcraft:copper_powered_rail",
+        "display_name": "Copper Powered Rail",
+        "bedrock_options": {
+          "icon": "ironcraft:copper_powered_rail",
+          "creative_category": "items"
+        }
+      },
+      {
+        "type": "legacy",
+        "custom_model_data": 2602002,
+        "bedrock_identifier": "ironcraft:iron_powered_rail",
+        "display_name": "Iron Powered Rail",
+        "bedrock_options": {
+          "icon": "ironcraft:iron_powered_rail",
+          "creative_category": "items"
+        }
+      },
+      {
+        "type": "legacy",
+        "custom_model_data": 2602003,
+        "bedrock_identifier": "ironcraft:diamond_powered_rail",
+        "display_name": "Diamond Powered Rail",
+        "bedrock_options": {
+          "icon": "ironcraft:diamond_powered_rail",
+          "creative_category": "items"
+        }
+      }
+    ]
+  }
+}
