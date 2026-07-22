@@ -16,10 +16,11 @@ physics:
   vanilla-boost-per-tick: 0.06
   # Speed removed per tick when the cart is above the rail's target.
   deceleration-per-tick: 0.06
-  # Classic minecart movement can skip a curve at one or more blocks per tick.
-  # MinecartPlus looks ahead and smoothly brakes to 16 blocks/second before a
-  # bend. If a cart is injected immediately beside a curve, safety takes
-  # priority and it brakes immediately rather than leaving the track.
+  # Classic minecart movement can skip a bend or uphill transition at high
+  # speed. MinecartPlus looks ahead and smoothly brakes to this speed before
+  # bends. Climbs use the lower of this value and the vanilla-safe 8 blocks/s.
+  # If a cart is injected immediately beside unsafe geometry, safety takes
+  # priority and it brakes immediately.
   curve-speed: 0.8
   curve-look-ahead: 32
   # Paper needs a high internal maximum so it does not hard-cap fast carts.

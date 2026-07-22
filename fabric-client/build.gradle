@@ -1,0 +1,52 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = 'MinecartPlus-Fabric-Client'
+}
+
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        minecartplus_client {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+processResources {
+    def version = project.version
+    inputs.property 'version', version
+    filesMatching('fabric.mod.json') {
+        expand 'version': version
+    }
+
+    from('../blockbench') {
+        include '*.png'
+        into 'assets/ironcraft/textures/block'
+        rename 'diamond_rail_on.png', 'diamond_powered_rail_on.png'
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 25
+}
+
+java {
+    withSourcesJar()
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}

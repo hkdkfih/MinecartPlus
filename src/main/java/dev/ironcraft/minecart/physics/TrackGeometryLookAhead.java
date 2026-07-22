@@ -6,12 +6,14 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.Rail;
 import org.bukkit.util.Vector;
 
-/** Lightweight forward scan; it never loads chunks. */
-final class CurveLookAhead {
-    private CurveLookAhead() {
+/** Lightweight forward scan for classic-movement geometry; it never loads chunks. */
+final class TrackGeometryLookAhead {
+    private static final double MAX_CLASSIC_ASCENT_SPEED = 0.4;
+
+    private TrackGeometryLookAhead() {
     }
 
-    static CurveApproach find(Block startingRail, Vector velocity, int maximumDistance) {
+    static SpeedLimitApproach find(Block startingRail, Vector velocity, int maximumDistance) {
         if (startingRail == null || horizontalSpeed(velocity) < 1.0E-8) {
             return null;
         }
@@ -27,21 +29,26 @@ final class CurveLookAhead {
             }
             Rail.Shape shape = data.getShape();
             if (isCurve(shape)) {
-                return new CurveApproach(distance);
+                return new SpeedLimitApproach(distance, SpeedLimitKind.CURVE);
             }
 
             if (runsEastWest(shape)) {
                 if (directionX == 0) {
                     directionX = sign(velocity.getX());
-                    directionZ = 0;
                 }
+                directionZ = 0;
             } else if (runsNorthSouth(shape)) {
                 if (directionZ == 0) {
-                    directionX = 0;
                     directionZ = sign(velocity.getZ());
                 }
+                directionX = 0;
             } else {
                 return null;
+            }
+
+            SpeedLimitKind kind = speedLimitKind(shape, directionX, directionZ);
+            if (kind != null) {
+                return new SpeedLimitApproach(distance, kind);
             }
 
             if (distance == maximumDistance || (directionX == 0 && directionZ == 0)) {
@@ -53,6 +60,25 @@ final class CurveLookAhead {
             }
         }
         return null;
+    }
+
+    static double speedLimit(SpeedLimitKind kind, double configuredCurveSpeed) {
+        return kind == SpeedLimitKind.ASCENT
+                ? Math.min(configuredCurveSpeed, MAX_CLASSIC_ASCENT_SPEED)
+                : configuredCurveSpeed;
+    }
+
+    static SpeedLimitKind speedLimitKind(Rail.Shape shape, int directionX, int directionZ) {
+        if (isCurve(shape)) {
+            return SpeedLimitKind.CURVE;
+        }
+        return switch (shape) {
+            case ASCENDING_EAST -> directionX > 0 ? SpeedLimitKind.ASCENT : null;
+            case ASCENDING_WEST -> directionX < 0 ? SpeedLimitKind.ASCENT : null;
+            case ASCENDING_NORTH -> directionZ < 0 ? SpeedLimitKind.ASCENT : null;
+            case ASCENDING_SOUTH -> directionZ > 0 ? SpeedLimitKind.ASCENT : null;
+            default -> null;
+        };
     }
 
     private static Block nextRail(Block current, int directionX, int directionZ) {
@@ -105,6 +131,11 @@ final class CurveLookAhead {
         return Math.hypot(velocity.getX(), velocity.getZ());
     }
 
-    record CurveApproach(int distance) {
+    enum SpeedLimitKind {
+        CURVE,
+        ASCENT
+    }
+
+    record SpeedLimitApproach(int distance, SpeedLimitKind kind) {
     }
 }

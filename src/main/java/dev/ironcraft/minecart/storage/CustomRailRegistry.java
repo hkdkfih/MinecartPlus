@@ -2,12 +2,14 @@ package dev.ironcraft.minecart.storage;
 
 import dev.ironcraft.minecart.rail.CustomRailType;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -19,6 +21,7 @@ import org.bukkit.persistence.PersistentDataType;
 public final class CustomRailRegistry {
     private final Map<CustomRailType, NamespacedKey> chunkDataKeys = new EnumMap<>(CustomRailType.class);
     private final Map<ChunkKey, EnumMap<CustomRailType, Set<Integer>>> cache = new HashMap<>();
+    private BiConsumer<Block, CustomRailType> changeListener = (block, type) -> { };
 
     public CustomRailRegistry() {
         for (CustomRailType type : CustomRailType.values()) {
@@ -45,18 +48,24 @@ public final class CustomRailRegistry {
         return storedTypeAt(block) != null;
     }
 
-    public void mark(Block block, CustomRailType type) {
+    public boolean mark(Block block, CustomRailType type) {
         Chunk chunk = block.getChunk();
         int packed = RailPositionCodec.encode(block.getX(), block.getY(), block.getZ());
         EnumMap<CustomRailType, Set<Integer>> chunkPositions = positions(chunk);
+        boolean anyChanged = false;
 
         for (CustomRailType candidate : CustomRailType.values()) {
             Set<Integer> values = chunkPositions.get(candidate);
             boolean changed = candidate == type ? values.add(packed) : values.remove(packed);
             if (changed) {
                 persist(chunk, candidate, values);
+                anyChanged = true;
             }
         }
+        if (anyChanged) {
+            changeListener.accept(block, type);
+        }
+        return anyChanged;
     }
 
     public boolean unmark(Block block) {
@@ -70,6 +79,9 @@ public final class CustomRailRegistry {
                 persist(chunk, type, values);
                 removed = true;
             }
+        }
+        if (removed) {
+            changeListener.accept(block, null);
         }
         return removed;
     }
@@ -100,6 +112,23 @@ public final class CustomRailRegistry {
 
     public void clearCache() {
         cache.clear();
+    }
+
+    public void setChangeListener(BiConsumer<Block, CustomRailType> changeListener) {
+        this.changeListener = java.util.Objects.requireNonNull(changeListener, "changeListener");
+    }
+
+    /** Returns a stable copy suitable for serializing after the current tick. */
+    public java.util.List<StoredRail> railsIn(Chunk chunk) {
+        EnumMap<CustomRailType, Set<Integer>> chunkPositions = positions(chunk);
+        java.util.List<StoredRail> rails = new ArrayList<>();
+        for (CustomRailType type : CustomRailType.values()) {
+            for (int packed : chunkPositions.get(type)) {
+                rails.add(new StoredRail(packed, type));
+            }
+        }
+        rails.sort(java.util.Comparator.comparingInt(StoredRail::packedPosition));
+        return java.util.List.copyOf(rails);
     }
 
     private EnumMap<CustomRailType, Set<Integer>> positions(Chunk chunk) {
@@ -139,5 +168,8 @@ public final class CustomRailRegistry {
         private static ChunkKey of(Chunk chunk) {
             return new ChunkKey(chunk.getWorld().getUID(), chunk.getX(), chunk.getZ());
         }
+    }
+
+    public record StoredRail(int packedPosition, CustomRailType type) {
     }
 }

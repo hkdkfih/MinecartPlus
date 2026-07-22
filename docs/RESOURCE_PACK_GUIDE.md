@@ -1,6 +1,6 @@
 # MinecartPlus Rail Resource Pack and Blockbench Guide
 
-This guide targets Minecraft Java 26.2, Paper 26.2, and resource pack format 88.0. No textures are bundled with MinecartPlus; the steps below derive them from the normal powered-rail texture.
+This guide targets Minecraft Java 26.2, Paper 26.2, and resource pack format 88.0. The finished textures are stored in `blockbench/` and bundled by the optional Fabric companion; the steps below explain the standalone item resource pack and how those textures were made.
 
 ## What a resource pack can change
 
@@ -168,7 +168,7 @@ If you change an `item.*-custom-model-data` setting in `config.yml`, update the 
 2. Press `F3+T` after edits.
 3. Obtain a vanilla powered rail and all three MinecartPlus tiers.
 4. Verify the normal item remains gold and each custom item has its recolor in inventory, hand, and dropped form.
-5. Place the items. All four placed blocks will still look vanilla; their gameplay stays distinct through MinecartPlus's chunk records.
+5. Place the items. With only the resource pack, all four placed blocks still look vanilla. Install the optional Fabric companion to render each recorded tier distinctly.
 
 For purple/black models, check JSON syntax, the ZIP root, singular `items` versus `models/item`, the `ironcraft` namespace, and the client log.
 
@@ -176,13 +176,13 @@ For purple/black models, check JSON syntax, the ZIP root, singular `items` versu
 
 - **Global texture replacement:** replacing Minecraft's two powered-rail block textures changes every tier, so it cannot distinguish them.
 - **Future ItemDisplay overlay:** MinecartPlus could spawn a non-colliding custom display over each recorded rail, synchronized with rail shape and redstone power. This preserves the real rail but costs one display entity per custom rail.
-- **Client mod/extension:** a client-side integration can receive the server's coordinate/type data and render per-instance models, but all clients need the compatible integration.
+- **Included Fabric companion:** build `fabric-client/` or install its JAR to receive authenticated coordinate/type data and render the supplied off/on sprite per rail. See [Fabric client setup](FABRIC_CLIENT.md).
 
 Hijacking an unrelated carrier block state is not used because its collision and client minecart assumptions can differ from a real rail.
 
 ## Bedrock/Geyser
 
-Java resource packs do not directly supply Bedrock visuals. Gameplay still works through Geyser, while optional Bedrock item icons require the mappings and Bedrock pack described in [GEYSER_SETUP.md](GEYSER_SETUP.md). Placed tiers remain visually identical unless a dedicated overlay/extension is added.
+Java resource packs and the Fabric client mod do not supply Bedrock visuals. Gameplay still works through Geyser, while optional Bedrock item icons require the mappings and Bedrock pack described in [GEYSER_SETUP.md](GEYSER_SETUP.md). Placed tiers remain visually identical on Bedrock.
 
 References:
 

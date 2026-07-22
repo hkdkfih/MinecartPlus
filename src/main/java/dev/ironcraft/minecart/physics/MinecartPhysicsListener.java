@@ -68,22 +68,35 @@ public final class MinecartPhysicsListener implements Listener {
         double traveledSpeed = observedSpeed * movementFactor;
 
         Double travelTarget = poweredRailTarget(traversal.lastRail(), current);
-        CurveLookAhead.CurveApproach curve = null;
-        if (!improvedMovement && traveledSpeed > current.curveSpeed()) {
+        TrackGeometryLookAhead.SpeedLimitApproach speedLimitApproach = null;
+        double geometrySpeed = current.curveSpeed();
+        double ascentSpeed = TrackGeometryLookAhead.speedLimit(
+                TrackGeometryLookAhead.SpeedLimitKind.ASCENT,
+                current.curveSpeed()
+        );
+        if (!improvedMovement && traveledSpeed > ascentSpeed) {
             int lookAhead = CurveSpeedPlanner.requiredLookAhead(
                     traveledSpeed,
-                    current.curveSpeed(),
+                    ascentSpeed,
                     current.decelerationPerTick(),
                     current.curveLookAhead()
             );
-            curve = CurveLookAhead.find(rail, velocity, lookAhead);
-            if (curve != null) {
-                double curveLimit = CurveSpeedPlanner.allowedSpeed(
-                        curve.distance(),
-                        current.curveSpeed(),
+            speedLimitApproach = TrackGeometryLookAhead.find(rail, velocity, lookAhead);
+            if (speedLimitApproach != null) {
+                geometrySpeed = TrackGeometryLookAhead.speedLimit(
+                        speedLimitApproach.kind(),
+                        current.curveSpeed()
+                );
+            }
+            if (speedLimitApproach != null && traveledSpeed > geometrySpeed) {
+                double geometryLimit = CurveSpeedPlanner.allowedSpeed(
+                        speedLimitApproach.distance(),
+                        geometrySpeed,
                         current.decelerationPerTick()
                 );
-                travelTarget = travelTarget == null ? curveLimit : Math.min(travelTarget, curveLimit);
+                travelTarget = travelTarget == null ? geometryLimit : Math.min(travelTarget, geometryLimit);
+            } else {
+                speedLimitApproach = null;
             }
         }
 
@@ -102,10 +115,10 @@ public final class MinecartPhysicsListener implements Listener {
                 current.decelerationPerTick() / movementFactor
         );
 
-        if (curve != null
-                && CurveSpeedPlanner.needsEmergencyBrake(curve.distance(), traveledSpeed)) {
-            double safeCurveVelocity = TravelSpeedCalibration.internalTarget(current.curveSpeed(), movementFactor);
-            adjustedSpeed = Math.min(adjustedSpeed, safeCurveVelocity);
+        if (speedLimitApproach != null
+                && CurveSpeedPlanner.needsEmergencyBrake(speedLimitApproach.distance(), traveledSpeed)) {
+            double safeGeometryVelocity = TravelSpeedCalibration.internalTarget(geometrySpeed, movementFactor);
+            adjustedSpeed = Math.min(adjustedSpeed, safeGeometryVelocity);
         }
 
         if (Math.abs(adjustedSpeed - observedSpeed) > MIN_HORIZONTAL_SPEED) {

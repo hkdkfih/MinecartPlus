@@ -4,6 +4,7 @@ import dev.ironcraft.minecart.command.IronCraftRailCommand;
 import dev.ironcraft.minecart.config.RailSettings;
 import dev.ironcraft.minecart.item.CustomRailItemFactory;
 import dev.ironcraft.minecart.listener.CopperRailLifecycleListener;
+import dev.ironcraft.minecart.network.RailSyncService;
 import dev.ironcraft.minecart.physics.MinecartPhysicsListener;
 import dev.ironcraft.minecart.rail.CustomRailType;
 import dev.ironcraft.minecart.storage.CustomRailRegistry;
@@ -21,6 +22,7 @@ public final class MinecartPlus extends JavaPlugin {
     private RailSettings settings;
     private CustomRailItemFactory items;
     private CustomRailRegistry registry;
+    private RailSyncService railSync;
     private MinecartPhysicsListener physics;
 
     @Override
@@ -37,6 +39,9 @@ public final class MinecartPlus extends JavaPlugin {
 
         items = new CustomRailItemFactory(this::settings);
         registry = new CustomRailRegistry();
+        railSync = new RailSyncService(this, registry);
+        registry.setChangeListener(railSync::sendUpdate);
+        railSync.enable();
         physics = new MinecartPhysicsListener(registry, this::settings);
 
         Bukkit.getPluginManager().registerEvents(new CopperRailLifecycleListener(this, registry, items), this);
@@ -69,6 +74,9 @@ public final class MinecartPlus extends JavaPlugin {
     public void onDisable() {
         if (physics != null) {
             physics.shutdown();
+        }
+        if (railSync != null) {
+            railSync.disable();
         }
         if (registry != null) {
             registry.clearCache();
