@@ -6,10 +6,12 @@ MinecartPlus is a Paper 26.2 plugin that adds faster, vanilla-style minecart rai
 
 | Rail | Logical ID | Actual target speed |
 |---|---|---:|
+| Stone Powered Rail | `ironcraft:stone_powered_rail` | 2 blocks/s |
 | Copper Powered Rail | `ironcraft:copper_powered_rail` | 8 blocks/s |
 | Normal Powered Rail | `minecraft:powered_rail` | 16 blocks/s |
 | Iron Powered Rail | `ironcraft:iron_powered_rail` | 20 blocks/s |
 | Diamond Powered Rail | `ironcraft:diamond_powered_rail` | 32 blocks/s |
+| Netherite Powered Rail | `ironcraft:netherite_powered_rail` | 64 blocks/s |
 
 Powered rails retain vanilla acceleration. A cart below the active rail's target accelerates as vanilla does; a faster incoming cart smoothly decelerates toward the target rather than being hard-clamped. Ordinary rails, detector rails, activator rails, and unpowered powered rails receive no custom acceleration or deceleration.
 
@@ -22,7 +24,7 @@ The plugin targets Paper 26.2 (`26.2.build.63-beta`) and Java 25. Paper currentl
 ## Install and use
 
 1. Run Paper 26.2 with Java 25.
-2. Copy `MinecartPlus-1.1.1.jar` into `plugins/`.
+2. Copy `MinecartPlus-1.2.0.jar` into `plugins/`.
 3. Restart the server; do not use Bukkit `/reload` for installation.
 4. Craft a tier or use the command below.
 
@@ -33,7 +35,7 @@ M _ M
 M S M
 M R M
 
-M = Copper Ingot, Iron Ingot, or Diamond
+M = Stone, Copper Ingot, Iron Ingot, Diamond, or Netherite Ingot
 S = Stick
 R = Redstone Dust
 ```
@@ -44,9 +46,11 @@ Commands:
 
 ```text
 /ironcraft
+/ironcraft give @s ironcraft:stone_powered_rail
 /ironcraft give @s ironcraft:copper_powered_rail
 /ironcraft give @s ironcraft:iron_powered_rail 64
 /ironcraft give PlayerName ironcraft:diamond_powered_rail 6
+/ironcraft give @s ironcraft:netherite_powered_rail 6
 /ironcraft reload
 ```
 
@@ -70,11 +74,11 @@ Without the optional Fabric companion, all placed tiers look like normal powered
 
 ## Optional Fabric client visuals
 
-`fabric-client/` builds a client-only Fabric 26.2 mod that renders the six sprites in `blockbench/` on placed custom rails. The real block remains a vanilla powered rail; the mod wraps its baked model and changes only the sprite at coordinates synchronized by the Paper plugin. Slopes, direction, powered state, collision, redstone, and minecart behavior stay vanilla.
+`fabric-client/` builds a client-only Fabric 26.2 mod that renders the ten sprites in `blockbench/` on placed custom rails. The real block remains a vanilla powered rail; the mod wraps its baked model and changes only the sprite at coordinates synchronized by the Paper plugin. Slopes, direction, powered state, collision, redstone, and minecart behavior stay vanilla.
 
 The plugin sends rail data only after a nonce-based companion handshake succeeds. It starts the handshake only for clients that advertise the companion channel, retries at most three times, and never retries again during that connection after the third failure. Vanilla and Geyser clients do not advertise the channel, receive no MinecartPlus packets, and continue to see vanilla powered rails.
 
-Install `MinecartPlus-Fabric-Client-1.1.4.jar` and Fabric API on participating Java clients. Full instructions and protocol behavior are in [docs/FABRIC_CLIENT.md](docs/FABRIC_CLIENT.md).
+Install `MinecartPlus-Fabric-Client-1.2.0.jar` and Fabric API on participating Java clients. Full instructions and protocol behavior are in [docs/FABRIC_CLIENT.md](docs/FABRIC_CLIENT.md).
 
 ## Build
 
@@ -83,4 +87,4 @@ Install `MinecartPlus-Fabric-Client-1.1.4.jar` and Fabric API on participating J
 ./gradlew -p fabric-client clean build
 ```
 
-The outputs are `build/libs/MinecartPlus-1.1.1.jar` and `fabric-client/build/libs/MinecartPlus-Fabric-Client-1.1.4.jar`.
+The outputs are `build/libs/MinecartPlus-1.2.0.jar` and `fabric-client/build/libs/MinecartPlus-Fabric-Client-1.2.0.jar`.

@@ -13,14 +13,14 @@ Host `MinecartPlus-Java-26.2.zip` at a direct HTTPS download URL, then set that 
 Current Java ZIP SHA-1:
 
 ```text
-e629524860699bbf26ae7e93e2475b8f24a67b56
+ec247399d89331a9770526c390573bcfff98ad6b
 ```
 
 Archive SHA-256 values:
 
 ```text
-ef39e04f83b97cc8210e4388a6921e6cf2519389399a76695dba40c5598556d7  MinecartPlus-Java-26.2.zip
-9dc97caacaeb9824b72a979388e583f033fd1a47a9c5d7c99882eda21a3f9498  MinecartPlus-Bedrock.mcpack
+0827ac22e605f617bcf7eb64140e4ffda04e2af7cb05d3d520d0754a5b4bbbcd  MinecartPlus-Java-26.2.zip
+47644d5e3c7d42a3edce597e473a0a218de978cc3bb412435b6784541eb07599  MinecartPlus-Bedrock.mcpack
 ```
 
 ## Geyser/Bedrock server
@@ -30,10 +30,10 @@ ef39e04f83b97cc8210e4388a6921e6cf2519389399a76695dba40c5598556d7  MinecartPlus-J
 3. Copy `minecartplus_rails.json` to `plugins/Geyser-Spigot/custom_mappings/` (or standalone Geyser's `custom_mappings/`).
 4. Restart Geyser.
 
-The packs use Custom Model Data values `2602001`, `2602002`, and `2602003`, matching MinecartPlus's default configuration.
+The packs use Custom Model Data values `2602000` through `2602004`, matching MinecartPlus's default configuration.
 
 ## Supplied texture notes
 
 - The source file `blockbench/diamond_rail_on.png` is packaged under the normalized name `diamond_powered_rail_on.png`.
 - The updated copper and iron `_on` textures are distinct and are packaged as supplied.
-- All six off/on textures are included in both source packs. Current item routing references the three non-`_on` textures.
+- All ten off/on textures are included in both source packs. Current item routing references the five non-`_on` textures.

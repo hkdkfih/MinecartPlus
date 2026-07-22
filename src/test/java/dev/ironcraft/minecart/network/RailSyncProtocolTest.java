@@ -41,6 +41,12 @@ class RailSyncProtocolTest {
     }
 
     @Test
+    void newRailTypesUseStableNetworkIds() throws Exception {
+        assertEquals(4, updateTypeId(CustomRailType.STONE));
+        assertEquals(5, updateTypeId(CustomRailType.NETHERITE));
+    }
+
+    @Test
     void largeSnapshotsAreFragmentedAndOnlyFirstFragmentReplaces() throws Exception {
         List<CustomRailRegistry.StoredRail> rails = new ArrayList<>();
         for (int index = 0; index < 4_001; index++) {
@@ -67,6 +73,14 @@ class RailSyncProtocolTest {
         assertEquals(-2, input.readInt());
         assertEquals(7, input.readInt());
         return input;
+    }
+
+    private static int updateTypeId(CustomRailType type) throws Exception {
+        DataInputStream input = input(RailSyncProtocol.update("minecraft:overworld", 0, 0, 0, type));
+        input.skipNBytes(2);
+        readString(input);
+        input.skipNBytes(12);
+        return input.readUnsignedByte();
     }
 
     private static String readString(DataInputStream input) throws Exception {

@@ -4,6 +4,16 @@
     "minecraft:powered_rail": [
       {
         "type": "legacy",
+        "custom_model_data": 2602000,
+        "bedrock_identifier": "ironcraft:stone_powered_rail",
+        "display_name": "Stone Powered Rail",
+        "bedrock_options": {
+          "icon": "ironcraft:stone_powered_rail",
+          "creative_category": "items"
+        }
+      },
+      {
+        "type": "legacy",
         "custom_model_data": 2602001,
         "bedrock_identifier": "ironcraft:copper_powered_rail",
         "display_name": "Copper Powered Rail",
@@ -29,6 +39,16 @@
         "display_name": "Diamond Powered Rail",
         "bedrock_options": {
           "icon": "ironcraft:diamond_powered_rail",
+          "creative_category": "items"
+        }
+      },
+      {
+        "type": "legacy",
+        "custom_model_data": 2602004,
+        "bedrock_identifier": "ironcraft:netherite_powered_rail",
+        "display_name": "Netherite Powered Rail",
+        "bedrock_options": {
+          "icon": "ironcraft:netherite_powered_rail",
           "creative_category": "items"
         }
       }

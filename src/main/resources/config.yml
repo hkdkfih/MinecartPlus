@@ -4,12 +4,14 @@ config-version: 2
 # for blocks per second. The plugin compensates for vanilla's occupied-cart
 # movement multiplier so riders see these speeds too.
 speeds:
+  stone-powered-rail: 0.1
   # Twice the vanilla powered-rail target.
   powered-rail: 0.8
   # The vanilla powered-rail target.
   copper-powered-rail: 0.4
   iron-powered-rail: 1.0
   diamond-powered-rail: 1.6
+  netherite-powered-rail: 3.2
 
 physics:
   # Vanilla 26.2 adds 0.06 blocks/tick while a powered rail is active.
@@ -33,6 +35,8 @@ crafting:
 item:
   # Float index 0 in the modern custom_model_data component. These are also
   # usable by Geyser v2 "legacy" mappings for optional Bedrock textures.
+  stone-custom-model-data: 2602000.0
   copper-custom-model-data: 2602001.0
   iron-custom-model-data: 2602002.0
   diamond-custom-model-data: 2602003.0
+  netherite-custom-model-data: 2602004.0

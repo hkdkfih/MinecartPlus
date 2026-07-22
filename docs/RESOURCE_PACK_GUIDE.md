@@ -10,9 +10,9 @@ A vanilla resource pack cannot distinguish a placed MinecartPlus rail. Powered r
 
 MinecartPlus remembers placed types in server-side chunk data:
 
-- item IDs: `ironcraft:copper_powered_rail`, `ironcraft:iron_powered_rail`, and `ironcraft:diamond_powered_rail`;
+- item IDs: `ironcraft:stone_powered_rail`, `ironcraft:copper_powered_rail`, `ironcraft:iron_powered_rail`, `ironcraft:diamond_powered_rail`, and `ironcraft:netherite_powered_rail`;
 - generic item marker: `ironcraft:rail_id`;
-- chunk coordinate lists: `ironcraft:copper_powered_rails`, `ironcraft:iron_powered_rails`, and `ironcraft:diamond_powered_rails`.
+- chunk coordinate lists use the corresponding plural logical IDs for all five tiers.
 
 This server-side spoof preserves vanilla rail shapes, redstone, collision, minecart tracking, Java-client compatibility, and Geyser compatibility.
 
@@ -28,14 +28,18 @@ MinecartPlusRailPack/
     └── ironcraft/
         ├── models/
         │   └── item/
+        │       ├── stone_powered_rail.json
         │       ├── copper_powered_rail.json
         │       ├── iron_powered_rail.json
-        │       └── diamond_powered_rail.json
+        │       ├── diamond_powered_rail.json
+        │       └── netherite_powered_rail.json
         └── textures/
             └── block/
+                ├── stone_powered_rail.png
                 ├── copper_powered_rail.png
                 ├── iron_powered_rail.png
-                └── diamond_powered_rail.png
+                ├── diamond_powered_rail.png
+                └── netherite_powered_rail.png
 ```
 
 The ZIP must contain `pack.mcmeta` and `assets` at its root, not inside an extra folder.
@@ -80,10 +84,10 @@ Do not edit files inside the game JAR.
 1. In Blockbench, create a **Java Block/Item** project.
 2. Import `powered_rail.png` in the Textures panel. For a geometry preview, open `rail_flat.json` and assign the image to its `#rail` texture slot.
 3. Switch to Paint mode and retain the original 16×16 size.
-4. Select only the gold rail pixels. Recolor them using colors sampled from Minecraft's copper, iron, or diamond item/block textures.
+4. Select only the gold rail pixels. Recolor them using colors sampled from Minecraft's stone, copper, iron, diamond, or netherite item/block textures.
 5. Preserve light, mid, and shadow tones; hue-shifting the existing shades works better than painting one flat color.
 6. Do not alter transparent pixels, sleepers, or the central redstone detail. Disable smoothing, interpolation, antialiasing, and blur.
-7. Export one PNG per tier to the three texture paths shown above.
+7. Export one PNG per tier to the five texture paths shown above.
 
 For possible future placed/display visuals, repeat the process with `powered_rail_on.png` and export `<tier>_powered_rail_on.png`. Keep the vanilla powered/unpowered redstone difference.
 
@@ -100,7 +104,7 @@ Create `assets/ironcraft/models/item/copper_powered_rail.json`:
 }
 ```
 
-Duplicate it as `iron_powered_rail.json` and `diamond_powered_rail.json`, changing `copper` in `layer0` to the relevant material.
+Duplicate it for the other four tiers, changing `copper` in `layer0` to the relevant material.
 
 ## Route Custom Model Data to the models
 
@@ -108,9 +112,11 @@ MinecartPlus uses these float values at Custom Model Data index 0:
 
 | Tier | Value |
 |---|---:|
+| Stone | 2602000 |
 | Copper | 2602001 |
 | Iron | 2602002 |
 | Diamond | 2602003 |
+| Netherite | 2602004 |
 
 Create `assets/minecraft/items/powered_rail.json`:
 
@@ -121,6 +127,13 @@ Create `assets/minecraft/items/powered_rail.json`:
     "property": "minecraft:custom_model_data",
     "index": 0,
     "entries": [
+      {
+        "threshold": 2602000,
+        "model": {
+          "type": "minecraft:model",
+          "model": "ironcraft:item/stone_powered_rail"
+        }
+      },
       {
         "threshold": 2602001,
         "model": {
@@ -146,6 +159,13 @@ Create `assets/minecraft/items/powered_rail.json`:
         "threshold": 2602004,
         "model": {
           "type": "minecraft:model",
+          "model": "ironcraft:item/netherite_powered_rail"
+        }
+      },
+      {
+        "threshold": 2602005,
+        "model": {
+          "type": "minecraft:model",
           "model": "minecraft:item/powered_rail"
         }
       }
@@ -158,17 +178,17 @@ Create `assets/minecraft/items/powered_rail.json`:
 }
 ```
 
-`range_dispatch` uses intervals, not equality. The final 2602004 entry closes the diamond interval and returns later values to vanilla. The fallback keeps items without Custom Model Data—including normal powered rails—vanilla.
+`range_dispatch` uses intervals, not equality. The final 2602005 entry closes the netherite interval and returns later values to vanilla. The fallback keeps items without Custom Model Data—including normal powered rails—vanilla.
 
-If you change an `item.*-custom-model-data` setting in `config.yml`, update the matching threshold. Keeping the three values consecutive makes the interval boundaries straightforward.
+If you change an `item.*-custom-model-data` setting in `config.yml`, update the matching threshold. Keeping the five values consecutive makes the interval boundaries straightforward.
 
 ## Test the Java pack
 
 1. Place the pack folder/ZIP in the client resource-pack directory and enable it above packs that replace powered rails.
 2. Press `F3+T` after edits.
-3. Obtain a vanilla powered rail and all three MinecartPlus tiers.
+3. Obtain a vanilla powered rail and all five MinecartPlus tiers.
 4. Verify the normal item remains gold and each custom item has its recolor in inventory, hand, and dropped form.
-5. Place the items. With only the resource pack, all four placed blocks still look vanilla. Install the optional Fabric companion to render each recorded tier distinctly.
+5. Place the items. With only the resource pack, all six placed blocks still look vanilla. Install the optional Fabric companion to render each recorded tier distinctly.
 
 For purple/black models, check JSON syntax, the ZIP root, singular `items` versus `models/item`, the `ironcraft` namespace, and the client log.
 

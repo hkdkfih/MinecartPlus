@@ -1,8 +1,8 @@
 # Geyser compatibility and optional Bedrock visuals
 
-MinecartPlus gameplay is server-authoritative and works through Geyser without a Geyser API dependency. Crafting, placement identity, drops, redstone behavior, and all four speed targets run on Paper.
+MinecartPlus gameplay is server-authoritative and works through Geyser without a Geyser API dependency. Crafting, placement identity, drops, redstone behavior, and all six speed targets run on Paper.
 
-Without extra files, Bedrock players see each custom item/block as a normal powered rail. That fallback is fully playable. The optional setup below gives the three custom **items** distinct inventory/hand icons; placed blocks remain powered rails.
+Without extra files, Bedrock players see each custom item/block as a normal powered rail. That fallback is fully playable. The optional setup below gives the five custom **items** distinct inventory/hand icons; placed blocks remain powered rails.
 
 ## Enable custom content
 
@@ -24,6 +24,16 @@ Create `minecartplus_rails.json` in Geyser's `custom_mappings` directory:
   "format_version": 2,
   "items": {
     "minecraft:powered_rail": [
+      {
+        "type": "legacy",
+        "custom_model_data": 2602000,
+        "bedrock_identifier": "ironcraft:stone_powered_rail",
+        "display_name": "Stone Powered Rail",
+        "bedrock_options": {
+          "icon": "ironcraft:stone_powered_rail",
+          "creative_category": "items"
+        }
+      },
       {
         "type": "legacy",
         "custom_model_data": 2602001,
@@ -53,6 +63,16 @@ Create `minecartplus_rails.json` in Geyser's `custom_mappings` directory:
           "icon": "ironcraft:diamond_powered_rail",
           "creative_category": "items"
         }
+      },
+      {
+        "type": "legacy",
+        "custom_model_data": 2602004,
+        "bedrock_identifier": "ironcraft:netherite_powered_rail",
+        "display_name": "Netherite Powered Rail",
+        "bedrock_options": {
+          "icon": "ironcraft:netherite_powered_rail",
+          "creative_category": "items"
+        }
       }
     ]
   }
@@ -75,6 +95,9 @@ Create a standard Bedrock resource pack with unique header/module UUIDs in `mani
   "resource_pack_name": "minecartplus_rails",
   "texture_name": "atlas.items",
   "texture_data": {
+    "ironcraft:stone_powered_rail": {
+      "textures": ["textures/items/stone_powered_rail"]
+    },
     "ironcraft:copper_powered_rail": {
       "textures": ["textures/items/copper_powered_rail"]
     },
@@ -83,6 +106,9 @@ Create a standard Bedrock resource pack with unique header/module UUIDs in `mani
     },
     "ironcraft:diamond_powered_rail": {
       "textures": ["textures/items/diamond_powered_rail"]
+    },
+    "ironcraft:netherite_powered_rail": {
+      "textures": ["textures/items/netherite_powered_rail"]
     }
   }
 }
@@ -94,6 +120,8 @@ Add these Bedrock-format PNGs:
 textures/items/copper_powered_rail.png
 textures/items/iron_powered_rail.png
 textures/items/diamond_powered_rail.png
+textures/items/stone_powered_rail.png
+textures/items/netherite_powered_rail.png
 ```
 
 Put the finished `.zip` or `.mcpack` in Geyser's packs directory and restart Geyser:

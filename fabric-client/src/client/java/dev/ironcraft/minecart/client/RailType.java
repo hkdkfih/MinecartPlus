@@ -3,9 +3,11 @@ package dev.ironcraft.minecart.client;
 import net.minecraft.resources.Identifier;
 
 public enum RailType {
+    STONE("stone_powered_rail"),
     COPPER("copper_powered_rail"),
     IRON("iron_powered_rail"),
-    DIAMOND("diamond_powered_rail");
+    DIAMOND("diamond_powered_rail"),
+    NETHERITE("netherite_powered_rail");
 
     private final Identifier offTexture;
     private final Identifier onTexture;
@@ -24,6 +26,8 @@ public enum RailType {
             case 1 -> COPPER;
             case 2 -> IRON;
             case 3 -> DIAMOND;
+            case 4 -> STONE;
+            case 5 -> NETHERITE;
             default -> null;
         };
     }

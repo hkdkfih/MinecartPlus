@@ -2,6 +2,12 @@
   "resource_pack_name": "minecartplus_rails",
   "texture_name": "atlas.items",
   "texture_data": {
+    "ironcraft:stone_powered_rail": {
+      "textures": ["textures/items/stone_powered_rail"]
+    },
+    "ironcraft:stone_powered_rail_on": {
+      "textures": ["textures/items/stone_powered_rail_on"]
+    },
     "ironcraft:copper_powered_rail": {
       "textures": ["textures/items/copper_powered_rail"]
     },
@@ -19,6 +25,12 @@
     },
     "ironcraft:diamond_powered_rail_on": {
       "textures": ["textures/items/diamond_powered_rail_on"]
+    },
+    "ironcraft:netherite_powered_rail": {
+      "textures": ["textures/items/netherite_powered_rail"]
+    },
+    "ironcraft:netherite_powered_rail_on": {
+      "textures": ["textures/items/netherite_powered_rail_on"]
     }
   }
 }

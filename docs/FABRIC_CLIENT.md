@@ -1,19 +1,19 @@
 # MinecartPlus Fabric Client
 
-The optional companion is a client-only Fabric mod for Minecraft 26.2. It gives placed copper, iron, and diamond powered rails distinct off/on textures without registering new blocks or changing gameplay.
+The optional companion is a client-only Fabric mod for Minecraft 26.2. It gives all five custom powered-rail tiers distinct off/on textures without registering new blocks or changing gameplay.
 
 ## Install
 
 Server:
 
-1. Run Paper 26.2 and install `MinecartPlus-1.1.1.jar` in `plugins/`.
+1. Run Paper 26.2 and install `MinecartPlus-1.2.0.jar` in `plugins/`.
 2. Restart the server. No Fabric server loader or proxy mod is required.
 
 Participating Java clients:
 
 1. Install Fabric Loader 0.19.3 or newer for Minecraft 26.2.
 2. Install Fabric API 0.155.2+26.2 or newer.
-3. Put `MinecartPlus-Fabric-Client-1.1.4.jar` in the client `mods/` directory.
+3. Put `MinecartPlus-Fabric-Client-1.2.0.jar` in the client `mods/` directory.
 
 Clients without the mod can join normally. Geyser players are also unaffected.
 
@@ -38,7 +38,7 @@ From the repository root, with Java 25 available:
 The client JAR is written to:
 
 ```text
-fabric-client/build/libs/MinecartPlus-Fabric-Client-1.1.4.jar
+fabric-client/build/libs/MinecartPlus-Fabric-Client-1.2.0.jar
 ```
 
-The build embeds all six PNGs directly from `blockbench/`; `diamond_rail_on.png` is normalized to `diamond_powered_rail_on.png` inside the JAR.
+The build embeds all ten PNGs directly from `blockbench/`; `diamond_rail_on.png` is normalized to `diamond_powered_rail_on.png` inside the JAR.

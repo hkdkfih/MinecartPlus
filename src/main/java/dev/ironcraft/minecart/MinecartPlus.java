@@ -62,11 +62,13 @@ public final class MinecartPlus extends JavaPlugin {
 
         getLogger().info(String.format(
                 java.util.Locale.ROOT,
-                "Enabled for Paper 26.2: powered %.1f, copper %.1f, iron %.1f, diamond %.1f blocks/s.",
-                settings.poweredRailSpeed() * 20.0,
+                "Enabled for Paper 26.2: stone %.1f, copper %.1f, powered %.1f, iron %.1f, diamond %.1f, netherite %.1f blocks/s.",
+                settings.stonePoweredRailSpeed() * 20.0,
                 settings.copperPoweredRailSpeed() * 20.0,
+                settings.poweredRailSpeed() * 20.0,
                 settings.ironPoweredRailSpeed() * 20.0,
-                settings.diamondPoweredRailSpeed() * 20.0
+                settings.diamondPoweredRailSpeed() * 20.0,
+                settings.netheritePoweredRailSpeed() * 20.0
         ));
     }
 

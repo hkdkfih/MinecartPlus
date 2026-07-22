@@ -5,9 +5,11 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 
 public enum CustomRailType {
+    STONE("stone_powered_rail", "Stone Powered Rail", Material.STONE, 0x9E9E9E),
     COPPER("copper_powered_rail", "Copper Powered Rail", Material.COPPER_INGOT, 0xC15A36),
     IRON("iron_powered_rail", "Iron Powered Rail", Material.IRON_INGOT, 0xD8D8D8),
-    DIAMOND("diamond_powered_rail", "Diamond Powered Rail", Material.DIAMOND, 0x55FFFF);
+    DIAMOND("diamond_powered_rail", "Diamond Powered Rail", Material.DIAMOND, 0x55FFFF),
+    NETHERITE("netherite_powered_rail", "Netherite Powered Rail", Material.NETHERITE_INGOT, 0x4A3438);
 
     private final String path;
     private final String displayName;

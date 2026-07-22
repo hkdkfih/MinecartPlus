@@ -102,6 +102,8 @@ public final class RailSyncProtocol {
             case COPPER -> 1;
             case IRON -> 2;
             case DIAMOND -> 3;
+            case STONE -> 4;
+            case NETHERITE -> 5;
         };
     }
 
