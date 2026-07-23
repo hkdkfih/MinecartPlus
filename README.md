@@ -24,7 +24,7 @@ The plugin targets Paper 26.2 (`26.2.build.63-beta`) and Java 25. Paper currentl
 ## Install and use
 
 1. Run Paper 26.2 with Java 25.
-2. Copy `MinecartPlus-1.2.0.jar` into `plugins/`.
+2. Copy `MinecartPlus-1.2.1.jar` into `plugins/`.
 3. Restart the server; do not use Bukkit `/reload` for installation.
 4. Craft a tier or use the command below.
 
@@ -78,7 +78,7 @@ Without the optional Fabric companion, all placed tiers look like normal powered
 
 The plugin sends rail data only after a nonce-based companion handshake succeeds. It starts the handshake only for clients that advertise the companion channel, retries at most three times, and never retries again during that connection after the third failure. Vanilla and Geyser clients do not advertise the channel, receive no MinecartPlus packets, and continue to see vanilla powered rails.
 
-Install `MinecartPlus-Fabric-Client-1.2.0.jar` and Fabric API on participating Java clients. Full instructions and protocol behavior are in [docs/FABRIC_CLIENT.md](docs/FABRIC_CLIENT.md).
+Install `MinecartPlus-Fabric-Client-1.2.1.jar` and Fabric API on participating Java clients. Full instructions and protocol behavior are in [docs/FABRIC_CLIENT.md](docs/FABRIC_CLIENT.md).
 
 ## Build
 
@@ -87,4 +87,4 @@ Install `MinecartPlus-Fabric-Client-1.2.0.jar` and Fabric API on participating J
 ./gradlew -p fabric-client clean build
 ```
 
-The outputs are `build/libs/MinecartPlus-1.2.0.jar` and `fabric-client/build/libs/MinecartPlus-Fabric-Client-1.2.0.jar`.
+The outputs are `build/libs/MinecartPlus-1.2.1.jar` and `fabric-client/build/libs/MinecartPlus-Fabric-Client-1.2.1.jar`.

@@ -9,12 +9,14 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import org.bukkit.Bukkit;
 import org.bukkit.FeatureFlag;
+import org.bukkit.GameRules;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Powerable;
+import org.bukkit.block.data.Rail;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.event.EventHandler;
@@ -36,6 +38,7 @@ public final class MinecartPhysicsListener implements Listener {
     private final Map<UUID, Double> originalMaxSpeeds = new HashMap<>();
     private final Map<UUID, Double> previousSpeeds = new HashMap<>();
     private final Map<UUID, Location> previousLocations = new HashMap<>();
+    private final Map<UUID, GameRuleOverride> improvedMaxSpeedOverrides = new HashMap<>();
 
     public MinecartPhysicsListener(CustomRailRegistry registry, Supplier<RailSettings> settings) {
         this.registry = registry;
@@ -64,10 +67,28 @@ public final class MinecartPhysicsListener implements Listener {
 
         RailSettings current = settings.get();
         boolean improvedMovement = hasImprovedMovement(minecart);
+        if (improvedMovement) {
+            ensureImprovedMaxSpeed(minecart.getWorld(), current);
+        }
         double movementFactor = TravelSpeedCalibration.movementFactor(improvedMovement, !minecart.isEmpty());
-        double traveledSpeed = observedSpeed * movementFactor;
 
         Double travelTarget = poweredRailTarget(traversal.lastRail(), current);
+        double controlledObservedSpeed = observedSpeed;
+        if (!improvedMovement) {
+            double slowdownFactor = minecart.isEmpty() ? 0.96 : 0.997;
+            if (minecart.isInWater()) {
+                slowdownFactor *= 0.95;
+            }
+            double appliedVanillaBoost = traversal.lastRail() == null ? 0.0 : current.vanillaBoostPerTick();
+            controlledObservedSpeed = SpeedController.restoreClassicClampedSpeed(
+                    observedSpeed,
+                    previousSpeeds.get(minecart.getUniqueId()),
+                    appliedVanillaBoost,
+                    slowdownFactor
+            );
+        }
+        double traveledSpeed = controlledObservedSpeed * movementFactor;
+
         TrackGeometryLookAhead.SpeedLimitApproach speedLimitApproach = null;
         double geometrySpeed = current.curveSpeed();
         double ascentSpeed = TrackGeometryLookAhead.speedLimit(
@@ -100,15 +121,25 @@ public final class MinecartPhysicsListener implements Listener {
             }
         }
 
-        if (travelTarget == null || observedSpeed <= MIN_HORIZONTAL_SPEED) {
+        if (travelTarget == null || controlledObservedSpeed <= MIN_HORIZONTAL_SPEED) {
             setMaxSpeedIfChanged(minecart, current.safetyMaxSpeed());
-            rememberSpeed(minecart, observedSpeed);
+            setHorizontalSpeed(minecart, velocity, observedSpeed, controlledObservedSpeed);
+            if (!improvedMovement
+                    && controlledObservedSpeed > SpeedController.CLASSIC_INTERNAL_SPEED_LIMIT) {
+                advanceClassicOverflow(
+                        minecart,
+                        previousLocation,
+                        currentLocation,
+                        controlledObservedSpeed * movementFactor
+                );
+            }
+            rememberSpeed(minecart, controlledObservedSpeed);
             return;
         }
 
         double velocityTarget = TravelSpeedCalibration.internalTarget(travelTarget, movementFactor);
         double adjustedSpeed = SpeedController.targetSpeed(
-                observedSpeed,
+                controlledObservedSpeed,
                 previousSpeeds.get(minecart.getUniqueId()),
                 velocityTarget,
                 current.vanillaBoostPerTick() * traversal.boostCount(),
@@ -121,13 +152,7 @@ public final class MinecartPhysicsListener implements Listener {
             adjustedSpeed = Math.min(adjustedSpeed, safeGeometryVelocity);
         }
 
-        if (Math.abs(adjustedSpeed - observedSpeed) > MIN_HORIZONTAL_SPEED) {
-            double scale = adjustedSpeed / observedSpeed;
-            Vector adjusted = velocity.clone();
-            adjusted.setX(adjusted.getX() * scale);
-            adjusted.setZ(adjusted.getZ() * scale);
-            minecart.setVelocity(adjusted);
-        }
+        setHorizontalSpeed(minecart, velocity, observedSpeed, adjustedSpeed);
         // Holding vanilla's internal maximum at the current target prevents a
         // powered rail from adding a boost that MinecartPlus must undo every
         // tick. Incoming speed is retained while smooth deceleration is active.
@@ -135,6 +160,14 @@ public final class MinecartPhysicsListener implements Listener {
                 current.safetyMaxSpeed(),
                 Math.max(velocityTarget, adjustedSpeed)
         ));
+        if (!improvedMovement && adjustedSpeed > SpeedController.CLASSIC_INTERNAL_SPEED_LIMIT) {
+            advanceClassicOverflow(
+                    minecart,
+                    previousLocation,
+                    currentLocation,
+                    adjustedSpeed * movementFactor
+            );
+        }
         rememberSpeed(minecart, adjustedSpeed);
     }
 
@@ -197,6 +230,7 @@ public final class MinecartPhysicsListener implements Listener {
         originalMaxSpeeds.clear();
         previousSpeeds.clear();
         previousLocations.clear();
+        restoreImprovedMaxSpeeds();
     }
 
     private void initialize(Minecart minecart) {
@@ -238,6 +272,138 @@ public final class MinecartPhysicsListener implements Listener {
 
     private static double horizontalSpeed(Vector velocity) {
         return Math.hypot(velocity.getX(), velocity.getZ());
+    }
+
+    private static void setHorizontalSpeed(
+            Minecart minecart,
+            Vector velocity,
+            double observedSpeed,
+            double requestedSpeed
+    ) {
+        if (observedSpeed <= MIN_HORIZONTAL_SPEED
+                || Math.abs(requestedSpeed - observedSpeed) <= MIN_HORIZONTAL_SPEED) {
+            return;
+        }
+        double scale = requestedSpeed / observedSpeed;
+        Vector adjusted = velocity.clone();
+        adjusted.setX(adjusted.getX() * scale);
+        adjusted.setZ(adjusted.getZ() * scale);
+        minecart.setVelocity(adjusted);
+    }
+
+    private void advanceClassicOverflow(
+            Minecart minecart,
+            Location previousLocation,
+            Location currentLocation,
+            double desiredTravelDistance
+    ) {
+        if (previousLocation == null
+                || previousLocation.getWorld() != currentLocation.getWorld()) {
+            return;
+        }
+
+        double observedTravelDistance = Math.hypot(
+                currentLocation.getX() - previousLocation.getX(),
+                currentLocation.getZ() - previousLocation.getZ()
+        );
+        double overflow = SpeedController.overflowDistance(desiredTravelDistance, observedTravelDistance);
+        if (overflow <= MIN_HORIZONTAL_SPEED) {
+            return;
+        }
+
+        Vector velocity = minecart.getVelocity();
+        double horizontalSpeed = horizontalSpeed(velocity);
+        if (horizontalSpeed <= MIN_HORIZONTAL_SPEED) {
+            return;
+        }
+        double directionX = velocity.getX() / horizontalSpeed;
+        double directionZ = velocity.getZ() / horizontalSpeed;
+        boolean eastWest = Math.abs(directionX) >= Math.abs(directionZ);
+        if (!flatStraightTrackIsClear(minecart, currentLocation, directionX, directionZ, overflow, eastWest)) {
+            return;
+        }
+
+        Location destination = currentLocation.clone().add(directionX * overflow, 0.0, directionZ * overflow);
+        if (minecart.teleport(destination)) {
+            previousLocations.put(minecart.getUniqueId(), destination.clone());
+            minecart.setVelocity(velocity);
+        }
+    }
+
+    private static boolean flatStraightTrackIsClear(
+            Minecart minecart,
+            Location origin,
+            double directionX,
+            double directionZ,
+            double distance,
+            boolean eastWest
+    ) {
+        World world = origin.getWorld();
+        int samples = Math.max(1, (int) Math.ceil(distance * 4.0));
+        for (int sample = 1; sample <= samples; sample++) {
+            double progress = distance * sample / samples;
+            Location point = origin.clone().add(directionX * progress, 0.0, directionZ * progress);
+            int blockX = (int) Math.floor(point.getX());
+            int blockZ = (int) Math.floor(point.getZ());
+            if (!world.isChunkLoaded(blockX >> 4, blockZ >> 4)) {
+                return false;
+            }
+
+            Block railBlock = findRail(point);
+            if (railBlock == null || !(railBlock.getBlockData() instanceof Rail rail)) {
+                return false;
+            }
+            Rail.Shape requiredShape = eastWest ? Rail.Shape.EAST_WEST : Rail.Shape.NORTH_SOUTH;
+            if (rail.getShape() != requiredShape) {
+                return false;
+            }
+
+            Vector offset = new Vector(directionX * progress, 0.0, directionZ * progress);
+            if (minecart.wouldCollideUsing(minecart.getBoundingBox().clone().shift(offset))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void ensureImprovedMaxSpeed(World world, RailSettings current) {
+        int requiredBlocksPerSecond = (int) Math.ceil(fastestTarget(current) * 20.0);
+        Integer existing = world.getGameRuleValue(GameRules.MAX_MINECART_SPEED);
+        if (existing == null || existing >= requiredBlocksPerSecond) {
+            return;
+        }
+
+        GameRuleOverride previousOverride = improvedMaxSpeedOverrides.get(world.getUID());
+        int original = previousOverride == null ? existing : previousOverride.original();
+        if (world.setGameRule(GameRules.MAX_MINECART_SPEED, requiredBlocksPerSecond)) {
+            improvedMaxSpeedOverrides.put(
+                    world.getUID(),
+                    new GameRuleOverride(original, requiredBlocksPerSecond)
+            );
+        }
+    }
+
+    private void restoreImprovedMaxSpeeds() {
+        for (Map.Entry<UUID, GameRuleOverride> entry : improvedMaxSpeedOverrides.entrySet()) {
+            World world = Bukkit.getWorld(entry.getKey());
+            if (world == null) {
+                continue;
+            }
+            GameRuleOverride override = entry.getValue();
+            Integer current = world.getGameRuleValue(GameRules.MAX_MINECART_SPEED);
+            if (current != null && current == override.applied()) {
+                world.setGameRule(GameRules.MAX_MINECART_SPEED, override.original());
+            }
+        }
+        improvedMaxSpeedOverrides.clear();
+    }
+
+    private static double fastestTarget(RailSettings settings) {
+        double fastest = settings.poweredRailSpeed();
+        for (CustomRailType type : CustomRailType.values()) {
+            fastest = Math.max(fastest, settings.speed(type));
+        }
+        return fastest;
     }
 
     private Double poweredRailTarget(Block activePoweredRail, RailSettings current) {
@@ -319,5 +485,8 @@ public final class MinecartPhysicsListener implements Listener {
     }
 
     private record PoweredTraversal(Block lastRail, int boostCount) {
+    }
+
+    private record GameRuleOverride(int original, int applied) {
     }
 }

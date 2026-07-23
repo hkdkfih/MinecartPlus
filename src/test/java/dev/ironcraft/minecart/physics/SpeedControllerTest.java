@@ -7,6 +7,37 @@ import org.junit.jupiter.api.Test;
 
 class SpeedControllerTest {
     @Test
+    void restoresVelocityDiscardedByClassicMinecartClamp() {
+        double observedAfterClampAndBoost = 2.0 * 0.997 + 0.06;
+
+        assertEquals(
+                2.11382,
+                SpeedController.restoreClassicClampedSpeed(
+                        observedAfterClampAndBoost,
+                        2.06,
+                        0.06,
+                        0.997
+                ),
+                1.0E-9
+        );
+    }
+
+    @Test
+    void doesNotHideARealCollisionWhileRestoringClassicSpeed() {
+        assertEquals(
+                0.5,
+                SpeedController.restoreClassicClampedSpeed(0.5, 3.2, 0.06, 0.997),
+                1.0E-9
+        );
+    }
+
+    @Test
+    void calculatesOnlyUntraveledOverflowDistance() {
+        assertEquals(1.7, SpeedController.overflowDistance(3.2, 1.5), 1.0E-9);
+        assertEquals(0.0, SpeedController.overflowDistance(1.0, 1.5), 1.0E-9);
+    }
+
+    @Test
     void leavesVanillaAccelerationUntouchedBelowTarget() {
         assertEquals(0.36, SpeedController.targetSpeed(0.36, 0.30, 0.40, 0.06, 0.06), 1.0E-9);
     }

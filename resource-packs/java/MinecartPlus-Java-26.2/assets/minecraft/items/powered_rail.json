@@ -1,55 +1,97 @@
 {
   "model": {
-    "type": "minecraft:range_dispatch",
+    "type": "minecraft:select",
     "property": "minecraft:custom_model_data",
     "index": 0,
-    "entries": [
+    "cases": [
       {
-        "threshold": 2602000,
+        "when": "ironcraft:stone_powered_rail",
         "model": {
           "type": "minecraft:model",
           "model": "ironcraft:item/stone_powered_rail"
         }
       },
       {
-        "threshold": 2602001,
+        "when": "ironcraft:copper_powered_rail",
         "model": {
           "type": "minecraft:model",
           "model": "ironcraft:item/copper_powered_rail"
         }
       },
       {
-        "threshold": 2602002,
+        "when": "ironcraft:iron_powered_rail",
         "model": {
           "type": "minecraft:model",
           "model": "ironcraft:item/iron_powered_rail"
         }
       },
       {
-        "threshold": 2602003,
+        "when": "ironcraft:diamond_powered_rail",
         "model": {
           "type": "minecraft:model",
           "model": "ironcraft:item/diamond_powered_rail"
         }
       },
       {
-        "threshold": 2602004,
+        "when": "ironcraft:netherite_powered_rail",
         "model": {
           "type": "minecraft:model",
           "model": "ironcraft:item/netherite_powered_rail"
         }
-      },
-      {
-        "threshold": 2602005,
-        "model": {
-          "type": "minecraft:model",
-          "model": "minecraft:item/powered_rail"
-        }
       }
     ],
     "fallback": {
-      "type": "minecraft:model",
-      "model": "minecraft:item/powered_rail"
+      "type": "minecraft:range_dispatch",
+      "property": "minecraft:custom_model_data",
+      "index": 0,
+      "entries": [
+        {
+          "threshold": 2602000,
+          "model": {
+            "type": "minecraft:model",
+            "model": "ironcraft:item/stone_powered_rail"
+          }
+        },
+        {
+          "threshold": 2602001,
+          "model": {
+            "type": "minecraft:model",
+            "model": "ironcraft:item/copper_powered_rail"
+          }
+        },
+        {
+          "threshold": 2602002,
+          "model": {
+            "type": "minecraft:model",
+            "model": "ironcraft:item/iron_powered_rail"
+          }
+        },
+        {
+          "threshold": 2602003,
+          "model": {
+            "type": "minecraft:model",
+            "model": "ironcraft:item/diamond_powered_rail"
+          }
+        },
+        {
+          "threshold": 2602004,
+          "model": {
+            "type": "minecraft:model",
+            "model": "ironcraft:item/netherite_powered_rail"
+          }
+        },
+        {
+          "threshold": 2602005,
+          "model": {
+            "type": "minecraft:model",
+            "model": "minecraft:item/powered_rail"
+          }
+        }
+      ],
+      "fallback": {
+        "type": "minecraft:model",
+        "model": "minecraft:item/powered_rail"
+      }
     }
   }
 }

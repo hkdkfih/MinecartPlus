@@ -13,13 +13,13 @@ Host `MinecartPlus-Java-26.2.zip` at a direct HTTPS download URL, then set that 
 Current Java ZIP SHA-1:
 
 ```text
-ec247399d89331a9770526c390573bcfff98ad6b
+70d6f379ae718a2085a70f44db9f76f524028a4f
 ```
 
 Archive SHA-256 values:
 
 ```text
-0827ac22e605f617bcf7eb64140e4ffda04e2af7cb05d3d520d0754a5b4bbbcd  MinecartPlus-Java-26.2.zip
+6afedd34f714d67d0667058951bc96294cf7b061ff837619d0639b632fe91e1a  MinecartPlus-Java-26.2.zip
 47644d5e3c7d42a3edce597e473a0a218de978cc3bb412435b6784541eb07599  MinecartPlus-Bedrock.mcpack
 ```
 

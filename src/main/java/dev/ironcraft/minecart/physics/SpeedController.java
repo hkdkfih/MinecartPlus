@@ -2,7 +2,41 @@ package dev.ironcraft.minecart.physics;
 
 /** Pure target-speed math, separated so it can be tested without a server. */
 public final class SpeedController {
+    public static final double CLASSIC_INTERNAL_SPEED_LIMIT = 2.0;
+    private static final double CLASSIC_CLAMP_TOLERANCE = 0.03;
+
     private SpeedController() {
+    }
+
+    /**
+     * Reconstructs the velocity that classic minecart movement discarded at its
+     * hard-coded 2 blocks/tick rail clamp. A collision or any other velocity
+     * outside the narrow post-clamp window remains authoritative.
+     */
+    public static double restoreClassicClampedSpeed(
+            double observedSpeed,
+            Double previousSpeed,
+            double vanillaBoost,
+            double slowdownFactor
+    ) {
+        if (previousSpeed == null || previousSpeed <= CLASSIC_INTERNAL_SPEED_LIMIT) {
+            return observedSpeed;
+        }
+        double clampedPostTickSpeed = CLASSIC_INTERNAL_SPEED_LIMIT * slowdownFactor + vanillaBoost;
+        if (Math.abs(observedSpeed - clampedPostTickSpeed) > CLASSIC_CLAMP_TOLERANCE) {
+            return observedSpeed;
+        }
+        return Math.max(observedSpeed, previousSpeed * slowdownFactor + vanillaBoost);
+    }
+
+    public static double overflowDistance(double desiredTravelDistance, double observedTravelDistance) {
+        if (!Double.isFinite(desiredTravelDistance) || desiredTravelDistance < 0.0) {
+            throw new IllegalArgumentException("desiredTravelDistance must be finite and non-negative");
+        }
+        if (!Double.isFinite(observedTravelDistance) || observedTravelDistance < 0.0) {
+            throw new IllegalArgumentException("observedTravelDistance must be finite and non-negative");
+        }
+        return Math.max(0.0, desiredTravelDistance - observedTravelDistance);
     }
 
     /**

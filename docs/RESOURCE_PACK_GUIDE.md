@@ -108,65 +108,59 @@ Duplicate it for the other four tiers, changing `copper` in `layer0` to the rele
 
 ## Route Custom Model Data to the models
 
-MinecartPlus uses these float values at Custom Model Data index 0:
+MinecartPlus puts a stable logical ID at string index 0 and a compatibility
+number at float index 0:
 
-| Tier | Value |
-|---|---:|
-| Stone | 2602000 |
-| Copper | 2602001 |
-| Iron | 2602002 |
-| Diamond | 2602003 |
-| Netherite | 2602004 |
+| Tier | String ID | Float value |
+|---|---|---:|
+| Stone | `ironcraft:stone_powered_rail` | 2602000 |
+| Copper | `ironcraft:copper_powered_rail` | 2602001 |
+| Iron | `ironcraft:iron_powered_rail` | 2602002 |
+| Diamond | `ironcraft:diamond_powered_rail` | 2602003 |
+| Netherite | `ironcraft:netherite_powered_rail` | 2602004 |
 
 Create `assets/minecraft/items/powered_rail.json`:
 
 ```json
 {
   "model": {
-    "type": "minecraft:range_dispatch",
+    "type": "minecraft:select",
     "property": "minecraft:custom_model_data",
     "index": 0,
-    "entries": [
+    "cases": [
       {
-        "threshold": 2602000,
+        "when": "ironcraft:stone_powered_rail",
         "model": {
           "type": "minecraft:model",
           "model": "ironcraft:item/stone_powered_rail"
         }
       },
       {
-        "threshold": 2602001,
+        "when": "ironcraft:copper_powered_rail",
         "model": {
           "type": "minecraft:model",
           "model": "ironcraft:item/copper_powered_rail"
         }
       },
       {
-        "threshold": 2602002,
+        "when": "ironcraft:iron_powered_rail",
         "model": {
           "type": "minecraft:model",
           "model": "ironcraft:item/iron_powered_rail"
         }
       },
       {
-        "threshold": 2602003,
+        "when": "ironcraft:diamond_powered_rail",
         "model": {
           "type": "minecraft:model",
           "model": "ironcraft:item/diamond_powered_rail"
         }
       },
       {
-        "threshold": 2602004,
+        "when": "ironcraft:netherite_powered_rail",
         "model": {
           "type": "minecraft:model",
           "model": "ironcraft:item/netherite_powered_rail"
-        }
-      },
-      {
-        "threshold": 2602005,
-        "model": {
-          "type": "minecraft:model",
-          "model": "minecraft:item/powered_rail"
         }
       }
     ],
@@ -178,9 +172,12 @@ Create `assets/minecraft/items/powered_rail.json`:
 }
 ```
 
-`range_dispatch` uses intervals, not equality. The final 2602005 entry closes the netherite interval and returns later values to vanilla. The fallback keeps items without Custom Model Data—including normal powered rails—vanilla.
-
-If you change an `item.*-custom-model-data` setting in `config.yml`, update the matching threshold. Keeping the five values consecutive makes the interval boundaries straightforward.
+The string selector avoids range-boundary mistakes and stays stable if the
+numeric compatibility values are changed. The fallback keeps items without
+MinecartPlus Custom Model Data—including normal powered rails—vanilla. The
+ready-made pack additionally nests the old numeric `range_dispatch` inside
+that fallback so previously issued items and Geyser-translated stacks remain
+compatible.
 
 ## Test the Java pack
 
